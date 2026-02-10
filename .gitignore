@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Cryptographic keys
+*.pem
+*.key
+
 ### STS ###
 .apt_generated
 .classpath
