@@ -3,12 +3,6 @@ package pacifico.mvm.bookflix.controller;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import pacifico.mvm.bookflix.dto.AutorDTO;
-import pacifico.mvm.bookflix.model.Autor;
-import pacifico.mvm.bookflix.service.AutorService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +14,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
+import pacifico.mvm.bookflix.dto.AutorDTO;
+import pacifico.mvm.bookflix.model.Autor;
+import pacifico.mvm.bookflix.service.AutorService;
+
 @RestController
 @RequestMapping(value = "/api/v1/autor")
 public class AutorController {
 	
-	@Autowired
-	private AutorService autorService;
+	private final AutorService autorService;
 	
-    @GetMapping(value = "/mostrar/{id}")
+    public AutorController(AutorService autorService) {
+		this.autorService = autorService;
+	}
+
+	@GetMapping(value = "/mostrar/{id}")
 	public ResponseEntity<Autor> find(@PathVariable Integer id) {	
 		Autor objeto = autorService.autorWithoutAvaliacoesDaObra(autorService.find(id));
 		return ResponseEntity.ok().body(objeto);

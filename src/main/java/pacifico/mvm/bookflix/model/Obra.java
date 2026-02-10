@@ -4,23 +4,28 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(indexes = { @Index(name = "idx_ifsn", columnList = "ifsn") })
 public class Obra implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -29,9 +34,8 @@ public class Obra implements Serializable {
 	private String ifsn;
 	private String titulo;
 	private String area;
+	@Column(length = 1600)
 	private String descricao;
-	private String nome_arquivo;
-	private String caminho_arquivo;
 	private int ano;
 
 	@JsonIgnore
@@ -39,28 +43,32 @@ public class Obra implements Serializable {
 	@JoinColumn(name="professor_id")
 	private Professor professor;
 	
+	@JsonIgnoreProperties(value = {"obra"})
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, 
+			CascadeType.MERGE, CascadeType.DETACH})
+	@JoinColumn(name = "arquivo_id", unique = true, nullable = false)
+	private Arquivo arquivo;
+	
 	@OneToMany(mappedBy = "obra", cascade = CascadeType.REMOVE)
 	private List<Avaliacao> avaliacoes = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "obra", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "obra", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Autor> autores = new ArrayList<>();
 	
 	public Obra() {
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public Obra(Integer id, String ifsn, String titulo, String area, String descricao, String nome_arquivo,
-			String caminho_arquivo, int ano, Professor professor) {
-		super();
+	public Obra(Integer id, String ifsn, String titulo, String area, String descricao, int ano,
+			Professor professor, Arquivo arquivo) {
 		this.id = id;
 		this.ifsn = ifsn;
 		this.titulo = titulo;
 		this.area = area;
 		this.descricao = descricao;
-		this.nome_arquivo = nome_arquivo;
-		this.caminho_arquivo = caminho_arquivo;
 		this.ano = ano;
 		this.professor = professor;
+		this.arquivo = arquivo;
 	}
 
 	public Integer getId() {
@@ -103,22 +111,6 @@ public class Obra implements Serializable {
 		this.descricao = descricao;
 	}
 
-	public String getNomeArquivo() {
-		return nome_arquivo;
-	}
-
-	public void setNomeArquivo(String nome_arquivo) {
-		this.nome_arquivo = nome_arquivo;
-	}
-
-	public String getCaminhoArquivo() {
-		return caminho_arquivo;
-	}
-
-	public void setCaminhoArquivo(String caminho_arquivo) {
-		this.caminho_arquivo = caminho_arquivo;
-	}
-
 	public int getAno() {
 		return ano;
 	}
@@ -133,6 +125,14 @@ public class Obra implements Serializable {
 
 	public void setProfessor(Professor professor) {
 		this.professor = professor;
+	}
+
+	public Arquivo getArquivo() {
+		return arquivo;
+	}
+
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 
 	public List<Avaliacao> getAvaliacoes() {

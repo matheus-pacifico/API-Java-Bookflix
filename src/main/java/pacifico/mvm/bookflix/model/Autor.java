@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Autor implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -27,7 +28,7 @@ public class Autor implements Serializable {
 	private Obra obra;
 
 	public Autor() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public Autor(Integer id, String nome, Obra obra) {

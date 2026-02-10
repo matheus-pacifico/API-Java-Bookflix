@@ -3,24 +3,26 @@ package pacifico.mvm.bookflix.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import pacifico.mvm.bookflix.dto.AutenticacaoDTO;
+import pacifico.mvm.bookflix.exception.DataIntegrityException;
+import pacifico.mvm.bookflix.exception.ObjectNotFoundException;
 import pacifico.mvm.bookflix.model.Autenticacao;
 import pacifico.mvm.bookflix.repository.AutenticacaoRepository;
-import pacifico.mvm.bookflix.service.exception.DataIntegrityException;
-import pacifico.mvm.bookflix.service.exception.ObjectNotFoundException;
 
 @Service
 public class AutenticacaoService {
 
-	@Autowired
-	private AutenticacaoRepository autenticacaoRepository;
-	private final AutenticacaoDTO autenticacaoDTO = new AutenticacaoDTO();
+	private final AutenticacaoRepository autenticacaoRepository;
+	private static final AutenticacaoDTO autenticacaoDTO = new AutenticacaoDTO();
 	
+	public AutenticacaoService(AutenticacaoRepository autenticacaoRepository) {
+		this.autenticacaoRepository = autenticacaoRepository;
+	}
+
 	public Autenticacao find(Integer id) {
 		Optional<Autenticacao> objeto = autenticacaoRepository.findById(id); 
 		return objeto.orElseThrow(() -> new ObjectNotFoundException( 

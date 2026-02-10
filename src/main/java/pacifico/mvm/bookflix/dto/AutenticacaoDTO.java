@@ -10,7 +10,9 @@ import pacifico.mvm.bookflix.model.Usuario;
 import org.hibernate.validator.constraints.Length;
 
 public class AutenticacaoDTO implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	@Email
 	@NotBlank(message="Preenchimento obrigatório")
@@ -21,7 +23,6 @@ public class AutenticacaoDTO implements Serializable {
 	private Usuario usuario;
 	
 	public AutenticacaoDTO() {
-		//TODO Auto-generated constructor stub
 	}
 
 	public AutenticacaoDTO(Autenticacao objeto) {

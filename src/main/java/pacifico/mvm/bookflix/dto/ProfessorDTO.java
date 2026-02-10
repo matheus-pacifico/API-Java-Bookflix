@@ -11,6 +11,7 @@ import pacifico.mvm.bookflix.model.Usuario;
 public class ProfessorDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	@NotEmpty
 	private String siape;
@@ -18,7 +19,6 @@ public class ProfessorDTO implements Serializable {
 	private List<Obra> obras;
 				
 	public ProfessorDTO() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public ProfessorDTO(Professor objeto) {

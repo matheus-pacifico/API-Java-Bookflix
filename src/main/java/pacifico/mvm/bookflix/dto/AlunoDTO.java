@@ -9,6 +9,7 @@ import pacifico.mvm.bookflix.model.Usuario;
 public class AlunoDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	@NotEmpty
 	private String ra;
@@ -16,7 +17,6 @@ public class AlunoDTO implements Serializable {
 	private Usuario usuario;
 				
 	public AlunoDTO() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public AlunoDTO(Aluno objeto) {

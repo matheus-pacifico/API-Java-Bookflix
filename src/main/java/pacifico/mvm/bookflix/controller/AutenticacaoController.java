@@ -3,12 +3,6 @@ package pacifico.mvm.bookflix.controller;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import pacifico.mvm.bookflix.dto.AutenticacaoDTO;
-import pacifico.mvm.bookflix.model.Autenticacao;
-import pacifico.mvm.bookflix.service.AutenticacaoService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +14,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
+import pacifico.mvm.bookflix.dto.AutenticacaoDTO;
+import pacifico.mvm.bookflix.model.Autenticacao;
+import pacifico.mvm.bookflix.service.AutenticacaoService;
+
 @RestController
 @RequestMapping(value = "/api/v1/autenticacao")
 public class AutenticacaoController {
 	
-	@Autowired
-	private AutenticacaoService autenticacaoService;
+	private final AutenticacaoService autenticacaoService;
 	
-    @GetMapping(value = "/mostrar/{id}")
+    public AutenticacaoController(AutenticacaoService autenticacaoService) {
+		this.autenticacaoService = autenticacaoService;
+	}
+
+	@GetMapping(value = "/mostrar/{id}")
 	public ResponseEntity<Autenticacao> find(@PathVariable Integer id) {
 		Autenticacao objeto = autenticacaoService.autenticacaoWithoutObra(autenticacaoService.find(id));
 		return ResponseEntity.ok().body(objeto);

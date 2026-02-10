@@ -1,4 +1,4 @@
-package pacifico.mvm.bookflix.service.exception;
+package pacifico.mvm.bookflix.exception;
 
 public class DataIntegrityException extends RuntimeException {
 

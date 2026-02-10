@@ -3,13 +3,6 @@ package pacifico.mvm.bookflix.controller;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import pacifico.mvm.bookflix.dto.AlunoDTO;
-import pacifico.mvm.bookflix.model.Aluno;
-import pacifico.mvm.bookflix.service.AlunoService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,15 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import pacifico.mvm.bookflix.dto.AlunoDTO;
+import pacifico.mvm.bookflix.model.Aluno;
+import pacifico.mvm.bookflix.service.AlunoService;
+
 @RestController
 @RequestMapping(value = "/api/v1/aluno")
 @Validated
 public class AlunoController {
   
-    @Autowired
-    private AlunoService alunoService;
+    private final AlunoService alunoService;
   
-    @GetMapping(value = "/mostrar/{id}")
+    public AlunoController(AlunoService alunoService) {
+		this.alunoService = alunoService;
+	}
+
+	@GetMapping(value = "/mostrar/{id}")
     public ResponseEntity<Aluno> find(@PathVariable Integer id) {
 	    Aluno objeto = alunoService.find(id); 
 	    return ResponseEntity.ok().body(objeto); 

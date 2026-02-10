@@ -9,7 +9,9 @@ import pacifico.mvm.bookflix.model.Obra;
 import pacifico.mvm.bookflix.model.Usuario;
 
 public class AvaliacaoDTO implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;	
 	private String comentario;
 	private int nota;
@@ -17,7 +19,7 @@ public class AvaliacaoDTO implements Serializable {
 	private Obra obra;
 			
 	public AvaliacaoDTO() {
-		// TODO Auto-generated constructor stub
+
 	}
 	
 	public AvaliacaoDTO(Avaliacao avaliacao) {

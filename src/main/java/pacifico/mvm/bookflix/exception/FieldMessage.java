@@ -1,4 +1,4 @@
-package pacifico.mvm.bookflix.controller.exception;
+package pacifico.mvm.bookflix.exception;
 
 import java.io.Serializable;
 

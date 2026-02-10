@@ -7,14 +7,15 @@ import pacifico.mvm.bookflix.model.Autor;
 import pacifico.mvm.bookflix.model.Obra;
 
 public class AutorDTO implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	@NotBlank(message="Preenchimento obrigatório")
 	private String nome;
 	private Obra obra;
 	
 	public AutorDTO() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public AutorDTO(Autor autor) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.validation.constraints.NotNull;
+import pacifico.mvm.bookflix.model.Arquivo;
 import pacifico.mvm.bookflix.model.Autor;
 import pacifico.mvm.bookflix.model.Avaliacao;
 import pacifico.mvm.bookflix.model.Obra;
@@ -14,21 +15,20 @@ import pacifico.mvm.bookflix.model.Usuario;
 public class ObraDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	@NotNull(message="Preenchimento obrigatório")
 	private String ifsn;
 	private String titulo;
 	private String area;
 	private String descricao;
-	private String nome_arquivo;
-	private String caminho_arquivo;
 	private int ano;
 	private Professor professor;
+	private Arquivo arquivo;
 	private List<Avaliacao> avaliacoes;
 	private List<Autor> autores;
 		
 	public ObraDTO() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public ObraDTO(Obra objeto) {
@@ -37,11 +37,9 @@ public class ObraDTO implements Serializable {
 		this.titulo = objeto.getTitulo();
 		this.area = objeto.getArea();
 		this.descricao = objeto.getDescricao();
-		this.autores = objeto.getAutores();
-		this.nome_arquivo = objeto.getNomeArquivo();
-		this.caminho_arquivo = objeto.getCaminhoArquivo();
 		this.ano = objeto.getAno();
 		this.professor = objeto.getProfessor();
+		this.arquivo = objeto.getArquivo();
 		this.avaliacoes = objeto.getAvaliacoes();
 		this.autores = objeto.getAutores();
 	}
@@ -86,20 +84,12 @@ public class ObraDTO implements Serializable {
 		this.descricao = descricao;
 	}
 
-	public String getNomeArquivo() {
-		return nome_arquivo;
+	public Arquivo getArquivo() {
+		return arquivo;
 	}
 
-	public void setNomeArquivo(String nome_arquivo) {
-		this.nome_arquivo = nome_arquivo;
-	}
-
-	public String getCaminhoArquivo() {
-		return caminho_arquivo;
-	}
-
-	public void setCaminhoArquivo(String caminho_arquivo) {
-		this.caminho_arquivo = caminho_arquivo;
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 
 	public int getAno() {
@@ -141,10 +131,9 @@ public class ObraDTO implements Serializable {
 		obraAuxiliar.setTitulo(objetoDTO.getTitulo());
 		obraAuxiliar.setArea(objetoDTO.getArea());
 		obraAuxiliar.setDescricao(objetoDTO.getDescricao());
-		obraAuxiliar.setNomeArquivo(objetoDTO.getNomeArquivo());
-		obraAuxiliar.setCaminhoArquivo(objetoDTO.getCaminhoArquivo());
 		obraAuxiliar.setAno(objetoDTO.getAno());
 		obraAuxiliar.setProfessor(objetoDTO.getProfessor());
+		obraAuxiliar.setArquivo(objetoDTO.getArquivo());
 		obraAuxiliar.setAutores(objetoDTO.getAutores());
 		obraAuxiliar.setAvaliacoes(objetoDTO.getAvaliacoes());
 		return obraAuxiliar;
@@ -152,16 +141,22 @@ public class ObraDTO implements Serializable {
 	
 	public Obra fromNewDTO(ObraDTO objetoNewDTO) {
 		Obra obra = new Obra(null, objetoNewDTO.getIfsn(), objetoNewDTO.getTitulo(), 
-			objetoNewDTO.getArea(), objetoNewDTO.getDescricao(), 
-			objetoNewDTO.getNomeArquivo(), objetoNewDTO.getCaminhoArquivo(), objetoNewDTO.getAno(), objetoNewDTO.getProfessor());
+			objetoNewDTO.getArea(), objetoNewDTO.getDescricao(), objetoNewDTO.getAno(), objetoNewDTO.getProfessor(),
+			objetoNewDTO.getArquivo());
 		obra.setAutores(objetoNewDTO.getAutores());
 		return obra;
 	}
 
 	public Obra obraWithoutSomeAttributes(Obra objeto) {
-		objeto.setProfessor(professorOnlyWithNameAndSiape(objeto.getProfessor()));
-		objeto.setAutores(listOfAutoresOnlyWithName((objeto.getAutores())));
-		objeto.setAvaliacoes(listOfAvaliacoesOnlyWithUsersNameWithoutObra(objeto.getAvaliacoes()));
+		if (objeto.getProfessor() != null) {
+			objeto.setProfessor(professorOnlyWithNameAndSiape(objeto.getProfessor()));
+		}
+		if (objeto.getAutores() != null) {
+			objeto.setAutores(listOfAutoresOnlyWithName((objeto.getAutores())));
+		}
+		if (objeto.getAvaliacoes() != null) {	
+			objeto.setAvaliacoes(listOfAvaliacoesOnlyWithUsersNameWithoutObra(objeto.getAvaliacoes()));
+		}
 		return objeto;
 	}
 	

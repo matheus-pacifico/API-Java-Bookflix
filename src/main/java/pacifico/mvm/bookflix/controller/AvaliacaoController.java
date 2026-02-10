@@ -4,12 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-import pacifico.mvm.bookflix.dto.AvaliacaoDTO;
-import pacifico.mvm.bookflix.model.Avaliacao;
-import pacifico.mvm.bookflix.service.AvaliacaoService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +15,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
+import pacifico.mvm.bookflix.dto.AvaliacaoDTO;
+import pacifico.mvm.bookflix.model.Avaliacao;
+import pacifico.mvm.bookflix.service.AvaliacaoService;
+
 @RestController
 @RequestMapping(value = "api/v1/avaliacao")
 public class AvaliacaoController {
 	
-	@Autowired
-	private AvaliacaoService avaliacaoService;
+	private final AvaliacaoService avaliacaoService;
 	
-    @GetMapping(value = "/mostrar/{id}")
+    public AvaliacaoController(AvaliacaoService avaliacaoService) {
+		this.avaliacaoService = avaliacaoService;
+	}
+
+	@GetMapping(value = "/mostrar/{id}")
 	public ResponseEntity<Avaliacao> find(@PathVariable Integer id) {
 		Avaliacao objeto = avaliacaoService.avaliacaoWithoutUsuariosDataExceptName(avaliacaoService.find(id));
 		return ResponseEntity.ok().body(objeto);

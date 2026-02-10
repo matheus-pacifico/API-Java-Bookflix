@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Autenticacao implements Serializable {
    
     private static final long serialVersionUID = 1L;
+    
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -28,7 +29,7 @@ public class Autenticacao implements Serializable {
 	private Usuario usuario;
 	
 	public Autenticacao() {
-		// TODO Auto-generated constructor stub
+
 	}
 
     public Autenticacao(Integer id, String email, String senha, Usuario usuario) {

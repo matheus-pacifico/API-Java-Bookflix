@@ -3,12 +3,6 @@ package pacifico.mvm.bookflix.controller;
 import java.net.URI;
 import java.util.List;
 
-import jakarta.validation.Valid;
-import pacifico.mvm.bookflix.dto.ProfessorDTO;
-import pacifico.mvm.bookflix.model.Professor;
-import pacifico.mvm.bookflix.service.ProfessorService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +14,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.validation.Valid;
+import pacifico.mvm.bookflix.dto.ProfessorDTO;
+import pacifico.mvm.bookflix.model.Professor;
+import pacifico.mvm.bookflix.service.ProfessorService;
+
 @RestController
 @RequestMapping(value = "/api/v1/professor")
 public class ProfessorController {
 	
-	@Autowired
-	private ProfessorService professorService;
+	private final ProfessorService professorService;
 	
+	public ProfessorController(ProfessorService professorService) {
+		this.professorService = professorService;
+	}
+
 	@GetMapping(value = "/mostrar/{id}")
 	public ResponseEntity<Professor> find(@PathVariable Integer id) {
 		Professor objeto = professorService.find(id);

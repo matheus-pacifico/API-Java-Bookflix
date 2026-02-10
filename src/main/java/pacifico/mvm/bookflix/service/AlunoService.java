@@ -3,24 +3,26 @@ package pacifico.mvm.bookflix.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import pacifico.mvm.bookflix.dto.AlunoDTO;
+import pacifico.mvm.bookflix.exception.DataIntegrityException;
+import pacifico.mvm.bookflix.exception.ObjectNotFoundException;
 import pacifico.mvm.bookflix.model.Aluno;
 import pacifico.mvm.bookflix.repository.AlunoRepository;
-import pacifico.mvm.bookflix.service.exception.DataIntegrityException;
-import pacifico.mvm.bookflix.service.exception.ObjectNotFoundException;
 
 @Service
 public class AlunoService {
 
-	@Autowired
-	private AlunoRepository alunoRepository;
-	private final AlunoDTO alunoDTO = new AlunoDTO();
+	private final AlunoRepository alunoRepository;
+	private static final AlunoDTO alunoDTO = new AlunoDTO();
 	
+	public AlunoService(AlunoRepository alunoRepository) {
+		this.alunoRepository = alunoRepository;
+	}
+
 	public Aluno find(Integer id) {
 		Optional<Aluno> objeto = alunoRepository.findById(id); 
 		return objeto.orElseThrow(() -> new ObjectNotFoundException( 

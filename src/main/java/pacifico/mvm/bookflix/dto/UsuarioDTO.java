@@ -9,7 +9,9 @@ import pacifico.mvm.bookflix.model.Professor;
 import pacifico.mvm.bookflix.model.Usuario;
 
 public class UsuarioDTO implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
+	
 	private Integer id;
 	private String nome;
 	private Professor professor;
@@ -17,7 +19,6 @@ public class UsuarioDTO implements Serializable {
 	private List<Avaliacao> avaliacoes;
 	
 	public UsuarioDTO() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public UsuarioDTO(Usuario objeto) {

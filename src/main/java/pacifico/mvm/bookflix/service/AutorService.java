@@ -3,24 +3,26 @@ package pacifico.mvm.bookflix.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import pacifico.mvm.bookflix.dto.AutorDTO;
+import pacifico.mvm.bookflix.exception.DataIntegrityException;
+import pacifico.mvm.bookflix.exception.ObjectNotFoundException;
 import pacifico.mvm.bookflix.model.Autor;
 import pacifico.mvm.bookflix.repository.AutorRepository;
-import pacifico.mvm.bookflix.service.exception.DataIntegrityException;
-import pacifico.mvm.bookflix.service.exception.ObjectNotFoundException;
 
 @Service
 public class AutorService {
 	
-	@Autowired
-	private AutorRepository autorRepository;
-	private final AutorDTO autorDTO = new AutorDTO();
+	private final AutorRepository autorRepository;
+	private static final AutorDTO autorDTO = new AutorDTO();
 	
+	public AutorService(AutorRepository autorRepository) {
+		this.autorRepository = autorRepository;
+	}
+
 	public Autor find(Integer id) {
 		Optional<Autor> objeto = autorRepository.findById(id); 
 		return objeto.orElseThrow(() -> new ObjectNotFoundException( 

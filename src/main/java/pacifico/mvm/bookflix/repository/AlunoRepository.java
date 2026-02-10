@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import pacifico.mvm.bookflix.model.Aluno;
 
 @Repository
-public interface AlunoRepository extends JpaRepository <Aluno, Integer>{
+public interface AlunoRepository extends JpaRepository<Aluno, Integer> {
 	
 	Optional<Aluno> findByRa(String ra);
 

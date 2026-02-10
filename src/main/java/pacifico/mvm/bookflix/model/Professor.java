@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Professor implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -33,7 +34,7 @@ public class Professor implements Serializable {
 	private List<Obra> obras = new ArrayList<Obra>();
 			
 	public Professor() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public Professor(Integer id, String siape, Usuario usuario) {
