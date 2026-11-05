@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backblaze.b2.client.exceptions.B2Exception;
+import com.backblaze.b2.client.exceptions.B2NotFoundException;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 import jakarta.persistence.Tuple;
@@ -105,21 +106,21 @@ public class ArquivoService {
 	    }
 	}
 
-    public void downloadFileByObraIfsn(String ifsn, HttpServletResponse response) throws IOException {
+    public void downloadFileByObraIfsn(String ifsn, HttpServletResponse response) throws IOException, B2Exception {
     	String filePath = arquivoRepository.getCaminhoArquivoByObraIfsn(ifsn);
     	requireFileIdentifier(filePath);
     	try {
     		backblaze.downloadFileByName(filePath, response);
-    	} catch (B2Exception e) {
+    	} catch (B2NotFoundException e) {
     		throw new FileNotFoundException("O arquivo não foi encontrado");
     	}
     }
     
-    public void downloadFileById(String fileId, HttpServletResponse response) throws IOException {
+    public void downloadFileById(String fileId, HttpServletResponse response) throws IOException, B2Exception {
     	requireFileIdentifier(fileId);
 		try {
 			backblaze.downloadFileById(fileId, response);
-		} catch (B2Exception e) {
+		} catch (B2NotFoundException e) {
 			throw new FileNotFoundException("O arquivo não foi encontrado");
 		}
     }
@@ -177,5 +178,5 @@ public class ArquivoService {
 	    }
 	    executor.shutdown();
 	}
-	
+
 }

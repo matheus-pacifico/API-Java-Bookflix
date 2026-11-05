@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
@@ -84,31 +85,39 @@ public class ExceptionController {
 
 	@ExceptionHandler(FileNotFoundException.class)
 	public ResponseEntity<StandardError> fileNotFound(FileNotFoundException e, HttpServletRequest request, HttpServletResponse response) {
+		if (response.isCommitted()) return null;
+		response.reset();
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		StandardError err = new StandardError(Instant.now().toEpochMilli(), HttpStatus.NOT_FOUND.value(),
-				"Arquivo não Encontrado", e.getMessage(), request.getRequestURI());
+				"Arquivo não encontrado", e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
 	}
 	
 	@ExceptionHandler(B2Exception.class)
-	public ResponseEntity<StandardError> cloudError(B2Exception e, HttpServletRequest request) {
+	public ResponseEntity<StandardError> cloudError(B2Exception e, HttpServletRequest request, HttpServletResponse response) {
+		if (response.isCommitted()) return null;
+		response.reset();
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		StandardError err = new StandardError(Instant.now().toEpochMilli(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				"Ocorreu um erro ao acessar o armazenamento em nuvem", e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
 	}
-	
+
 	@ExceptionHandler(IOException.class)
-	public void fileError(IOException e, HttpServletRequest request,
-            HttpServletResponse response) {
+	public ResponseEntity<StandardError> fileError(IOException e, HttpServletRequest request, HttpServletResponse response) {
+		if (isClientAbort(e) || response.isCommitted()) return null;
+		response.reset();
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-	}	
+		StandardError err = new StandardError(Instant.now().toEpochMilli(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	            "Erro ao processar arquivo", e.getMessage(), request.getRequestURI());
+	    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+	}
 
 	@ExceptionHandler(FileUploadException.class)
-	public ResponseEntity<StandardError> fileNotFound(FileUploadException e, HttpServletRequest request) {
+	public ResponseEntity<StandardError> fileUploadError(FileUploadException e, HttpServletRequest request) {
 		StandardError err = new StandardError(Instant.now().toEpochMilli(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				"Erro ao enviar arquivo", e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
-	
 	}
 	
 	@ExceptionHandler(TokenProcessingException.class)
@@ -137,6 +146,17 @@ public class ExceptionController {
 		StandardError err = new StandardError(Instant.now().toEpochMilli(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				"Um erro desconhecido ocorreu", e.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+	}
+	
+	private boolean isClientAbort(IOException e) {
+	    Throwable cause = e;
+	    while (cause != null) {
+	        if (cause instanceof AsyncRequestNotUsableException) {
+	            return true;
+	        }
+	        cause = cause.getCause();
+	    }
+	    return false;
 	}
 
 }
