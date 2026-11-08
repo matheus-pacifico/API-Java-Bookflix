@@ -40,7 +40,7 @@ public class ArquivoService {
 	private final Backblaze backblaze;
 
     private static final Tika tika = new Tika();
-		
+
 	public ArquivoService(
 			ArquivoRepository arquivoRepository, 
 			JwsService jwsService,
@@ -51,7 +51,7 @@ public class ArquivoService {
 		this.jwsService = jwsService;
         this.backblaze = factory.create(bucketName);
 	}
-	
+
 	private void validatePdfFile(MultipartFile file) throws IOException, IllegalArgumentException {
 	    if (file.isEmpty()) {
 	        throw new IllegalArgumentException("O arquivo está vazio");
@@ -64,13 +64,13 @@ public class ArquivoService {
 	        input.reset();
 	    }
 	}
-	
+
 	private String generateUniqueFileName(String extension) {
 	    return Instant.now().toEpochMilli() 
 	            + UUID.randomUUID().toString().substring(24, 36) 
 	            + (extension.startsWith(".") ? extension : "." + extension);
 	}
-	
+
 	private Map<String, Object> uploadFileAndGetFileInfo(MultipartFile file) throws IOException, B2Exception {
 		validatePdfFile(file);
 		String filePath = "docs/" + generateUniqueFileName("pdf");
@@ -88,7 +88,7 @@ public class ArquivoService {
 		return fileInfo;
 	}
 
-	public String uploadFile(MultipartFile file) throws IOException, B2Exception {
+	public String upload(MultipartFile file) throws FileUploadException {
 		final long TOKEN_VALIDITY = 7200L; // in seconds (2 hours)
 		try {
 			return jwsService.generateToken(
@@ -97,6 +97,10 @@ public class ArquivoService {
                     TOKEN_VALIDITY);
 		} catch (TokenGenerationException e) {
 			throw new FileUploadException("Erro ao gerar o token do arquivo");
+		} catch (IOException e) {
+			throw new FileUploadException("Falha ao enviar o arquivo");
+		} catch (B2Exception e) {
+			throw new FileUploadException("Erro ao salvar o arquivo", e.getCause());
 		}
 	}
 	
@@ -106,7 +110,7 @@ public class ArquivoService {
 	    }
 	}
 
-    public void downloadFileByObraIfsn(String ifsn, HttpServletResponse response) throws IOException, B2Exception {
+    public void downloadByObraIfsn(String ifsn, HttpServletResponse response) throws IOException, B2Exception {
     	String filePath = arquivoRepository.getCaminhoArquivoByObraIfsn(ifsn);
     	requireFileIdentifier(filePath);
     	try {
@@ -116,7 +120,7 @@ public class ArquivoService {
     	}
     }
     
-    public void downloadFileById(String fileId, HttpServletResponse response) throws IOException, B2Exception {
+    public void downloadById(String fileId, HttpServletResponse response) throws IOException, B2Exception {
     	requireFileIdentifier(fileId);
 		try {
 			backblaze.downloadFileById(fileId, response);
@@ -125,23 +129,22 @@ public class ArquivoService {
 		}
     }
 	
-	public void deleteFile(String path, String id) throws B2Exception {
+	public void delete(String path, String id) throws B2Exception {
 		if (path == null || id == null || path.isBlank() || id.isBlank()) {
 			throw new IllegalArgumentException("Arquivo inválido");
 		}
 		backblaze.deleteFile(path, id);
 	}
     
-	public void deleteFileByIfsnAndFileName(String ifsn, String originalFileName) throws B2Exception {
+	public void deleteByIfsnAndFileName(String ifsn, String originalFileName) throws B2Exception {
 		Tuple fileInfo = arquivoRepository.getPathAndIdToDeleteFile(ifsn, originalFileName);
 		if(fileInfo == null) {
 			throw new IllegalArgumentException("Não foi possível verificar o arquivo a ser excluído");
 		}
-		deleteFile(fileInfo.get("caminho_arquivo", String.class), 
-				fileInfo.get("id_arquivo", String.class));
+		delete(fileInfo.get("caminho_arquivo", String.class), fileInfo.get("id_arquivo", String.class));
 	}
 	
-	public void deleteFilesByTokens(Set<String> tokens) throws B2Exception, Exception {
+	public void deleteByTokens(Set<String> tokens) throws B2Exception, Exception {
 		Map<String, String> filesInfo = new HashMap<>();
 		tokens = tokens.stream().limit(40).collect(Collectors.toSet());
 		for (String token : tokens) {
@@ -165,12 +168,12 @@ public class ArquivoService {
 		deleteMultipleFiles(nonRelatedFiles, filesInfo);
 	}
 	
-	public void deleteMultipleFiles(Set<String> fileIds, Map<String, String> filesInfo) {
+	private void deleteMultipleFiles(Set<String> fileIds, Map<String, String> filesInfo) {
 	    ExecutorService executor = Executors.newFixedThreadPool(10);
 	    for (String fileId : fileIds) {
 	        executor.submit(() -> {
 	            try {
-	            	deleteFile(filesInfo.get(fileId).toString(), fileId);
+	            	delete(filesInfo.get(fileId).toString(), fileId);
 	            } catch (Exception e) {
 	            	System.out.println("Erro ao deletar arquivo: " + fileId);
 	            }
